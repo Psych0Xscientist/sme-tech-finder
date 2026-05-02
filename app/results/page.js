@@ -52,11 +52,6 @@ export default function Results() {
     };
   }, [picks, answers]);
 
-  function copyShareLink() {
-    if (typeof window === "undefined") return;
-    navigator.clipboard?.writeText(window.location.href).catch(() => {});
-  }
-
   function printPlan() {
     if (typeof window !== "undefined") window.print();
   }
@@ -144,13 +139,6 @@ export default function Results() {
               className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-full text-sm"
             >
               🖨️ Print / Save as PDF
-            </button>
-            <button
-              type="button"
-              onClick={copyShareLink}
-              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-full text-sm"
-            >
-              🔗 Copy share link
             </button>
             <span className="text-xs text-slate-500">
               No email or sign-up — your shortlist is saved in this browser.
