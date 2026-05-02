@@ -354,7 +354,7 @@ export default function HowItWorksPage() {
               How it works
             </Link>
             <a
-              href="https://www.linkedin.com/in/sammortimer/"
+              href="https://www.linkedin.com/in/samuel-mortimer-5a938a14b/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-slate-900"
