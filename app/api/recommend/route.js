@@ -66,19 +66,21 @@ Respond with a JSON object using exactly this schema:
 {
   "prose": "3 short warm paragraphs as one string, separated by blank lines (\\n\\n). Para 1: what you noticed about my situation. Para 2: the 2 most important tools to start with and why. Para 3: one simple first step I can take this week. Under 220 words total. UK English. Plain language. No hedges or caveats.",
   "timeline": [
-    { "when": "W1", "heading": "This week", "title": "short action title", "body": "1–2 sentences on what to do, in plain English", "tools": ["one or two tool names from the list"] },
+    { "when": "W1", "heading": "This week", "title": "short action title", "body": "1–2 sentences naming the tool(s) and what to do with them", "tools": ["one or two tool names from the list"] },
     { "when": "M1", "heading": "This month", "title": "...", "body": "...", "tools": ["..."] },
     { "when": "Q1", "heading": "This quarter", "title": "...", "body": "...", "tools": ["..."] },
-    { "when": "+", "heading": "Beyond Q1", "title": "...", "body": "1 sentence on what comes next once the basics are humming", "tools": [] }
+    { "when": "+", "heading": "Beyond Q1", "title": "...", "body": "1–2 sentences naming the remaining tool(s) and when to layer them in", "tools": ["..."] }
   ],
   "prep": ["3 to 5 short practical things to gather before starting (e.g. 'business bank login', 'last 3 months of invoices')"]
 }
 
-Rules for the timeline:
-- Tool names in 'tools' MUST be drawn ONLY from this list: ${JSON.stringify(toolNames)}.
-- W1 should tackle the user's biggest stated pain.
-- Spread the picks across W1/M1/Q1 — don't dump everything in W1.
-- '+' is a forward-look only — leave 'tools' empty.`,
+CRITICAL TIMELINE RULES — read carefully:
+- EVERY tool in this list must appear in exactly one step's "tools" array: ${JSON.stringify(toolNames)}.
+- No tool may be omitted. No tool may appear in more than one step. Together, the four "tools" arrays must contain every name above, exactly once.
+- Distribute by priority and dependency: most urgent / highest-impact tools that tackle the user's biggest stated pain go in W1. Foundational follow-ups go in M1. Growth and visibility tools go in Q1. Lower-priority or "nice to have" tools go in "+".
+- Each step should name 1–3 tools. Do NOT leave any step empty (including "+").
+- Tool names in "tools" arrays must match the names in the list above EXACTLY (same spelling, same capitalisation).
+- The "body" of each step must mention the tools by name and explain what to do with them in plain English.`,
       },
     ];
 
