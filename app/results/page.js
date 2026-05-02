@@ -7,6 +7,8 @@ import { scoreTools, topPicks } from "../scoring";
 export default function Results() {
   const [picks, setPicks] = useState(null);
   const [answers, setAnswers] = useState(null);
+  const [aiText, setAiText] = useState("");
+  const [aiStatus, setAiStatus] = useState("idle"); // idle | loading | ready | error
 
   useEffect(() => {
     const raw = sessionStorage.getItem("quizAnswers");
@@ -16,6 +18,40 @@ export default function Results() {
     const scored = scoreTools(parsed);
     setPicks(topPicks(scored, { maxTotal: 8, maxPerCategory: 2 }));
   }, []);
+
+  // Fetch AI commentary once picks are ready
+  useEffect(() => {
+    if (!picks || picks.length === 0 || !answers) return;
+
+    let cancelled = false;
+    setAiStatus("loading");
+
+    fetch("/api/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        answers,
+        picks: picks.map((p) => p.tool),
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        if (data.text) {
+          setAiText(data.text);
+          setAiStatus("ready");
+        } else {
+          setAiStatus("error");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setAiStatus("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [picks, answers]);
 
   if (picks === null) {
     return (
@@ -46,7 +82,6 @@ export default function Results() {
     );
   }
 
-  // Group picks by category for display
   const groups = {};
   for (const p of picks) {
     const cat = p.tool.category;
@@ -66,6 +101,30 @@ export default function Results() {
         <p className="text-lg text-slate-600 mb-10">
           These match the size, budget, industry and pain points you told us about. Click through to learn more — no sign-up needed.
         </p>
+
+        {/* AI walk-through */}
+        {aiStatus !== "idle" && (
+          <div className="mb-10 bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+            <p className="text-sm font-semibold tracking-widest text-blue-600 uppercase mb-3">
+              Your personal walk-through
+            </p>
+            {aiStatus === "loading" && (
+              <p className="text-slate-500 italic">
+                Our AI adviser is reading your answers…
+              </p>
+            )}
+            {aiStatus === "ready" && (
+              <div className="text-slate-700 whitespace-pre-line leading-relaxed">
+                {aiText}
+              </div>
+            )}
+            {aiStatus === "error" && (
+              <p className="text-slate-500 italic">
+                Couldn&apos;t reach the AI adviser just now — your shortlist below is still spot on.
+              </p>
+            )}
+          </div>
+        )}
 
         {Object.entries(groups).map(([category, items]) => (
           <section key={category} className="mb-10">
