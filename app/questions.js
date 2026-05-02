@@ -77,7 +77,7 @@ export const questions = [
       { label: "Finances & invoicing", value: "finances-vat", tags: ["finances-vat", "getting-paid"] },
       { label: "Managing staff", value: "staff-rotas", tags: ["staff-rotas", "payroll"] },
       { label: "Marketing & social media", value: "new-customers", tags: ["new-customers"] },
-      { label: "I don't have a clear answer — it just goes", value: "admin", tags: ["admin"] },
+      { label: "I don't have a clear answer — it just goes", value: "unclear", tags: ["admin"] },    
     ],
   },
   {
