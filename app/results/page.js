@@ -2,12 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { scoreTools, topPicks } from "../scoring";
+import { scoreTools, topPicks, costSummary } from "../scoring";
+
+const TIMELINE_COLOURS = {
+  W1: "bg-blue-600",
+  M1: "bg-blue-500",
+  Q1: "bg-blue-400",
+  "+": "bg-slate-300",
+};
 
 export default function Results() {
   const [picks, setPicks] = useState(null);
   const [answers, setAnswers] = useState(null);
-  const [aiText, setAiText] = useState("");
+  const [prose, setProse] = useState("");
+  const [timeline, setTimeline] = useState([]);
+  const [prep, setPrep] = useState([]);
   const [aiStatus, setAiStatus] = useState("idle"); // idle | loading | ready | error
 
   useEffect(() => {
@@ -36,12 +45,14 @@ export default function Results() {
       .then((r) => r.json())
       .then((data) => {
         if (cancelled) return;
-        if (data.text) {
-          setAiText(data.text);
-          setAiStatus("ready");
-        } else {
+        if (data.error) {
           setAiStatus("error");
+          return;
         }
+        setProse(data.prose || "");
+        setTimeline(Array.isArray(data.timeline) ? data.timeline : []);
+        setPrep(Array.isArray(data.prep) ? data.prep : []);
+        setAiStatus("ready");
       })
       .catch(() => {
         if (!cancelled) setAiStatus("error");
@@ -94,6 +105,7 @@ export default function Results() {
   }
 
   const industryLabel = answers?.industry?.label;
+  const cost = costSummary(picks);
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -145,8 +157,9 @@ export default function Results() {
             </span>
           </div>
 
+          {/* AI walk-through */}
           {aiStatus !== "idle" && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 mb-10 shadow-sm">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 mb-6 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
                   <svg
@@ -174,7 +187,7 @@ export default function Results() {
               )}
               {aiStatus === "ready" && (
                 <div className="text-slate-700 whitespace-pre-line leading-relaxed">
-                  {aiText}
+                  {prose}
                 </div>
               )}
               {aiStatus === "error" && (
@@ -186,12 +199,116 @@ export default function Results() {
             </div>
           )}
 
+          {/* Cost banner */}
+          <div className="mb-6">
+            <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold tracking-widest text-emerald-700 uppercase mb-1">
+                    Your stack — all-in cost
+                  </p>
+                  <p className="text-2xl font-bold text-slate-900">
+                    {cost.headline}
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">{cost.blurb}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500">{cost.breakdown}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Prep card */}
+          {aiStatus === "ready" && prep.length > 0 && (
+            <div className="mb-12">
+              <div className="bg-white border-2 border-slate-200 rounded-2xl p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-sm shrink-0">
+                    📋
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold tracking-widest text-slate-500 uppercase mb-1">
+                      Before you start (Step 0)
+                    </p>
+                    <h3 className="font-bold text-slate-900 mb-2">
+                      Things to have on hand
+                    </h3>
+                    <p className="text-sm text-slate-600 mb-3">
+                      No rush — just gather these so Week 1 is smooth:
+                    </p>
+                    <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-slate-700">
+                      {prep.map((p, i) => (
+                        <li key={i}>· {p}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 90-day timeline */}
+          {aiStatus === "ready" && timeline.length > 0 && (
+            <div className="mb-14">
+              <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 sm:p-8 shadow-sm">
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                  Your 90-day plan
+                </h2>
+                <p className="text-slate-600 mb-8">
+                  A simple, sequenced rollout — so you don&apos;t try to do it all
+                  in one weekend.
+                </p>
+
+                <div className="space-y-6">
+                  {timeline.map((step, idx) => {
+                    const colour = TIMELINE_COLOURS[step.when] || "bg-slate-300";
+                    const last = idx === timeline.length - 1;
+                    return (
+                      <div key={idx} className="flex gap-5">
+                        <div className="flex flex-col items-center">
+                          <div
+                            className={`w-12 h-12 rounded-full ${colour} text-white font-bold text-sm flex items-center justify-center shadow-md`}
+                          >
+                            {step.when}
+                          </div>
+                          {!last && (
+                            <div className="w-0.5 flex-1 bg-blue-200 mt-2"></div>
+                          )}
+                        </div>
+                        <div className="flex-1 pb-6">
+                          <p className="text-xs font-semibold tracking-widest text-blue-600 uppercase mb-1">
+                            {step.heading}
+                          </p>
+                          <h3 className="text-lg font-bold text-slate-900 mb-2">
+                            {step.title}
+                          </h3>
+                          <p className="text-slate-600 mb-3">{step.body}</p>
+                          {Array.isArray(step.tools) && step.tools.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {step.tools.map((t, i) => (
+                                <span
+                                  key={i}
+                                  className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-blue-700"
+                                >
+                                  {t}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
             Your shortlist in detail
           </h2>
-          <p className="text-slate-600 mb-6">
-            Grouped by what they fix.
-          </p>
+          <p className="text-slate-600 mb-6">Grouped by what they fix.</p>
 
           {Object.entries(groups).map(([category, items]) => (
             <div key={category} className="mb-8">

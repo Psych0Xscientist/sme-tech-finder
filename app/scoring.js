@@ -107,3 +107,47 @@ export function topPicks(scored, { maxTotal = 8, maxPerCategory = 2 } = {}) {
   }
   return picks;
 }
+
+
+// ----------------------------------------------------------------------
+// Cost summary — turns a list of picks into a £-range + tier breakdown.
+// We don't store real prices, so we use honest tier ranges and let the
+// user see "X free · Y paid" alongside.
+// ----------------------------------------------------------------------
+
+const TIER_RANGES = {
+  Free: [0, 0],
+  Low: [10, 25],
+  Mid: [40, 80],
+  High: [100, 200],
+};
+
+export function costSummary(picks) {
+  let lo = 0;
+  let hi = 0;
+  let freeCount = 0;
+  let paidCount = 0;
+
+  for (const p of picks) {
+    const tool = p.tool || p; // accept either {tool, score} or bare tool
+    const range = TIER_RANGES[tool.priceTier] || [0, 0];
+    lo += range[0];
+    hi += range[1];
+    if (tool.priceTier === "Free") freeCount += 1;
+    else paidCount += 1;
+  }
+
+  const headline =
+    lo === 0 && hi === 0
+      ? "All free — £0/mo"
+      : `£${lo}–£${hi}/mo when fully running`;
+
+  const blurb =
+    paidCount === 0
+      ? "Every tool here has a free tier."
+      : "Free tools first. Most paid ones have a trial — test before committing.";
+
+  const breakdown = `${freeCount} free · ${paidCount} paid`;
+
+  return { headline, blurb, breakdown };
+}
