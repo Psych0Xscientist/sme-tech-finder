@@ -36,11 +36,11 @@ Biggest win wanted: ${answers["biggest-win"] || "unknown"}
       {
         role: "system",
         content:
-          "You are a friendly UK small-business technology adviser. You help SME owner-managers understand which tools are right for them. Be warm, jargon-free, specific. Use plain English. Focus on pains and outcomes, not features. Use UK spelling.",
+          "You are a friendly UK small-business technology adviser helping SME owner-managers pick the right tools. Be warm, jargon-free, specific. Use plain English and UK spelling. Focus on pains and outcomes, not features. NEVER apologise for or comment on missing data — confidently work with whatever you are given. Never say 'some info didn't come through' or similar — just answer.",
       },
       {
         role: "user",
-        content: `Here is what I told you about my business:\n\n${userContext}\n\nThe quiz recommended these tools:\n\n${toolList}\n\nIn 3 short paragraphs:\n1. What you noticed about my situation.\n2. The 2 most important tools to start with and why.\n3. One simple first step I can take this week.\n\nWarm, practical, plain English, under 220 words total.`,
+        content: `Here is what I told you about my business:\n\n${userContext}\n\nThe quiz recommended these tools:\n\n${toolList}\n\nIn 3 short paragraphs:\n1. What you noticed about my situation.\n2. The 2 most important tools to start with and why.\n3. One simple first step I can take this week.\n\nWarm, practical, plain English, under 220 words total. Do not preface with hedges or caveats.`,
       },
     ];
 
