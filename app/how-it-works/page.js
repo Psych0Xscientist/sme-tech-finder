@@ -15,6 +15,9 @@ export default function HowItWorksPage() {
             Right<span className="text-blue-600">Tech</span>
           </Link>
           <div className="flex items-center gap-6 text-sm">
+            <Link href="/catalog" className="text-slate-600 hover:text-slate-900">
+              Catalogue
+            </Link>
             <Link href="/how-it-works" className="text-slate-900 font-semibold">
               How it works
             </Link>
@@ -329,7 +332,7 @@ export default function HowItWorksPage() {
           </div>
           <div className="mt-8 flex gap-3">
             <a
-              href="https://www.linkedin.com/in/sammortimer/"
+              href="https://www.linkedin.com/in/samuel-mortimer-5a938a14b/"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-full"
@@ -350,6 +353,9 @@ export default function HowItWorksPage() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <p>© 2026 RightTech · A portfolio project by Sam Mortimer</p>
           <div className="flex gap-6">
+            <Link href="/catalog" className="hover:text-slate-900">
+              Catalogue
+            </Link>
             <Link href="/how-it-works" className="hover:text-slate-900">
               How it works
             </Link>

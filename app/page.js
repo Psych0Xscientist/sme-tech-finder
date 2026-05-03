@@ -16,6 +16,9 @@ export default function LandingPage() {
             Right<span className="text-blue-600">Tech</span>
           </div>
           <div className="flex items-center gap-6 text-sm">
+            <Link href="/catalog" className="text-slate-600 hover:text-slate-900">
+              Catalogue
+            </Link>
             <Link href="/how-it-works" className="text-slate-600 hover:text-slate-900">
               How it works
             </Link>
@@ -29,17 +32,17 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <section className="px-6 pt-20 pb-12 sm:pt-24 sm:pb-16">
+      <section className="px-6 py-20 sm:py-24">
         <div className="max-w-3xl mx-auto text-center">
           <p className="text-sm font-semibold tracking-widest text-blue-600 uppercase mb-4">
             For UK SME owner-managers
           </p>
-          <h1 className="text-5xl sm:text-7xl font-extrabold text-slate-900 leading-[1.05] mb-6">
+          <h1 className="text-5xl sm:text-6xl font-extrabold text-slate-900 leading-[1.05] mb-6">
             The right tech,
             <br />
             without the headache.
           </h1>
-          <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xl text-slate-600 mb-8 leading-relaxed">
             Answer a few plain-English questions. Get a personal shortlist of
             UK-friendly tools — and a 90-day plan to put them to work.
           </p>
@@ -53,9 +56,6 @@ export default function LandingPage() {
           </div>
           <p className="text-sm text-slate-500">
             No sign-up · no email · 100% free
-          </p>
-          <p className="text-sm text-slate-400 mt-8">
-            ↓ See what you&apos;d get
           </p>
         </div>
       </section>
@@ -192,6 +192,9 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500">
           <p>© 2026 RightTech · A portfolio project by Sam Mortimer</p>
           <div className="flex gap-6">
+            <Link href="/catalog" className="hover:text-slate-900">
+              Catalogue
+            </Link>
             <Link href="/how-it-works" className="hover:text-slate-900">
               How it works
             </Link>

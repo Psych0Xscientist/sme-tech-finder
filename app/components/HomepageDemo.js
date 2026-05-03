@@ -152,7 +152,7 @@ export default function HomepageDemo() {
           </h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
             Click an industry below to preview a sample shortlist and 90-day plan.
-            The real one is built around <em>your</em> answers, not someone
+            The real one is built around <em>your</em>  answers, not someone
             else&apos;s.
           </p>
         </div>
