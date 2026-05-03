@@ -70,8 +70,14 @@ export default function Quiz() {
     <div className="bg-slate-50 min-h-screen">
       <nav className="bg-white border-b border-slate-100">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="font-bold text-xl text-slate-900">
+          <Link href="/" className="flex items-center gap-2">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="32" height="32" rx="8" fill="#2563eb"/>
+                <path d="M9 16.5L14 21.5L23 11.5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="font-bold text-xl text-slate-900">
             Right<span className="text-blue-600">Tech</span>
+            </span>
           </Link>
           <p className="text-sm text-slate-500">
             Question <span className="font-semibold text-slate-900">{step + 1}</span>{" "}
