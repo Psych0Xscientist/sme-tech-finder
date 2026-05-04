@@ -1,158 +1,112 @@
-import { catalog } from "@/app/catalog";
-
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const TURN_LIMIT = 15;
 
 export async function POST(request) {
-  let body;
   try {
-    body = await request.json();
-  } catch {
-    return new Response("Bad request", { status: 400 });
+    const { messages, answers, picks } = await request.json();
+
+    const endpoint = process.env.AZURE_AI_ENDPOINT;
+    const key = process.env.AZURE_AI_KEY;
+    const deployment = process.env.AZURE_AI_DEPLOYMENT;
+
+    if (!endpoint || !key || !deployment) {
+      return Response.json({ error: "AI not configured" }, { status: 500 });
+    }
+
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return Response.json({ error: "messages array required" }, { status: 400 });
+    }
+
+    const userTurns = messages.filter((m) => m.role === "user").length;
+    if (userTurns > TURN_LIMIT) {
+      return Response.json(
+        { error: `You've reached the ${TURN_LIMIT}-question limit. Start fresh to keep going.` },
+        { status: 429 }
+      );
+    }
+
+    const systemPrompt = buildSystemPrompt(answers, picks);
+
+    const aiResp = await fetch(`${endpoint}/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": key,
+      },
+      body: JSON.stringify({
+        model: deployment,
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        temperature: 0.7,
+        max_completion_tokens: 600,
+      }),
+    });
+
+    if (!aiResp.ok) {
+      const errText = await aiResp.text();
+      console.error("Foundry chat error:", aiResp.status, errText);
+      return Response.json(
+        { error: "AI request failed", detail: errText },
+        { status: 500 }
+      );
+    }
+
+    const data = await aiResp.json();
+    const reply = data.choices?.[0]?.message?.content || "";
+
+    return Response.json({ reply });
+  } catch (e) {
+    console.error("Chat route error:", e);
+    return Response.json({ error: "Server error" }, { status: 500 });
   }
-
-  const { messages, answers, picks } = body || {};
-
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return new Response("Bad request", { status: 400 });
-  }
-
-  const userTurns = messages.filter((m) => m.role === "user").length;
-  if (userTurns > TURN_LIMIT) {
-    return new Response("Turn limit reached", { status: 429 });
-  }
-
-  const pickedTools = (picks || [])
-    .map((p) => {
-      const fromCatalog = catalog.find((t) => t.name === (p.name || p));
-      return fromCatalog || (typeof p === "object" ? p : null);
-    })
-    .filter(Boolean);
-
-  const systemPrompt = buildSystemPrompt(answers, pickedTools);
-
-  const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-  const key = process.env.AZURE_OPENAI_KEY;
-  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
-  const apiVersion =
-    process.env.AZURE_OPENAI_API_VERSION || "2024-08-01-preview";
-
-  if (!endpoint || !key || !deployment) {
-    return new Response("AI not configured", { status: 500 });
-  }
-
-  const url = `${endpoint.replace(/\/$/, "")}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
-
-  const upstream = await fetch(url, {
-    method: "POST",
-    headers: {
-      "api-key": key,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      messages: [{ role: "system", content: systemPrompt }, ...messages],
-      stream: true,
-      temperature: 0.7,
-      max_tokens: 500,
-    }),
-  });
-
-  if (!upstream.ok || !upstream.body) {
-    return new Response("AI service error", { status: 502 });
-  }
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      const reader = upstream.body.getReader();
-      const decoder = new TextDecoder();
-      const encoder = new TextEncoder();
-      let buffer = "";
-
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || "";
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith("data:")) continue;
-            const data = trimmed.slice(5).trim();
-            if (data === "[DONE]") {
-              controller.close();
-              return;
-            }
-            try {
-              const json = JSON.parse(data);
-              const delta = json.choices?.[0]?.delta?.content;
-              if (delta) controller.enqueue(encoder.encode(delta));
-            } catch {
-              // skip malformed chunk
-            }
-          }
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-  });
-
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "no-cache, no-transform",
-      "X-Accel-Buffering": "no",
-    },
-  });
 }
 
 function buildSystemPrompt(answers, picks) {
-  return `You are RightTech's AI adviser, helping a UK SME owner-manager understand their tool shortlist.
+  const single = (k) => answers?.[k]?.label || "unknown";
+  const multi = (k) => {
+    const arr = answers?.[k];
+    if (!Array.isArray(arr) || arr.length === 0) return "none stated";
+    return arr.map((o) => o.label).join(", ");
+  };
 
-THEIR QUIZ ANSWERS:
-${formatAnswers(answers)}
+  const userContext = answers
+    ? `
+Business size: ${single("size")}
+Industry: ${single("industry")}
+Tech comfort: ${single("tech-comfort")}
+Biggest pains: ${multi("biggest-pain")}
+Where time goes: ${single("where-time-goes")}
+Current stack: ${multi("current-stack")}
+Growth stage: ${single("growth-stage")}
+Budget: ${single("budget")}
+Decision style: ${single("decision-style")}
+Biggest win wanted: ${single("biggest-win")}
+`.trim()
+    : "(no quiz answers available)";
 
-THEIR PERSONAL SHORTLIST:
-${formatPicks(picks)}
+  const toolList =
+    (picks || [])
+      .map(
+        (p) =>
+          `- ${p.name} (${p.category}, ${p.priceTier}): ${p.description}`
+      )
+      .join("\n") || "(no shortlist available)";
 
-GUARDRAILS — read carefully:
-- Only answer questions about this user's recommended tools, their business, or general UK SME software topics.
-- If they ask something off-topic (creative writing, weather, news, jokes, world events, coding help), politely redirect: "I'm here to help with your tech shortlist — want to ask about one of your picks?"
-- If they ask about specific pricing, niche features, or anything you're not certain of, say so plainly: "I don't have that detail — check the tool's website to confirm."
-- Use UK spelling. Plain English. No tech jargon. No long bullet lists.
-- Keep replies short — usually 2-4 sentences. The user is busy.
-- Be warm and direct. Like a trusted friend who happens to know UK SME software well.`;
-}
+  return `You are RightTech's friendly UK small-business technology adviser. The user has just been given a shortlist of tools and may ask follow-up questions about it.
 
-function formatAnswers(answers) {
-  if (!answers || typeof answers !== "object") return "(no answers available)";
-  const lines = [];
-  for (const [key, value] of Object.entries(answers)) {
-    if (Array.isArray(value)) {
-      lines.push(
-        `- ${key}: ${value.map((v) => v?.label || v).filter(Boolean).join(", ")}`
-      );
-    } else if (value && typeof value === "object") {
-      lines.push(`- ${key}: ${value.label || JSON.stringify(value)}`);
-    } else if (value != null) {
-      lines.push(`- ${key}: ${value}`);
-    }
-  }
-  return lines.length ? lines.join("\n") : "(no answers available)";
-}
+USER'S BUSINESS:
+${userContext}
 
-function formatPicks(picks) {
-  if (!picks || picks.length === 0) return "(no shortlist available)";
-  return picks
-    .map(
-      (t) =>
-        `- ${t.name} (${t.category || "tool"}, ${t.priceTier || "?"} price): ${t.description || ""}`
-    )
-    .join("\n");
+USER'S SHORTLIST:
+${toolList}
+
+GROUND RULES:
+- Stay grounded in the user's situation and the tools on their shortlist. Don't invent tools that aren't on it.
+- Be warm, jargon-free, specific. UK English and UK spelling.
+- Keep replies short and practical — under 150 words unless they explicitly ask for more detail.
+- Never apologise for missing data or add hedging caveats. Confidently use what you have.
+- If they ask "which one first" or similar, give a specific recommendation and explain why in plain language.
+- If they ask about a tool not on their shortlist, briefly note it but steer back to what they have.
+- Plain prose. No markdown headers, no code blocks. The occasional dash list is fine.`;
 }
