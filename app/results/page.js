@@ -1,9 +1,12 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { scoreTools, topPicks, costSummary } from "../scoring";
 import AdvisorChat from "../components/AdvisorChat";
+import TrustpilotBadge from "../components/TrustpilotBadge";
+
 
 const TIMELINE_COLOURS = {
   W1: "bg-blue-600",
@@ -12,6 +15,7 @@ const TIMELINE_COLOURS = {
   "+": "bg-slate-300",
 };
 
+
 export default function Results() {
   const [picks, setPicks] = useState(null);
   const [answers, setAnswers] = useState(null);
@@ -19,6 +23,7 @@ export default function Results() {
   const [timeline, setTimeline] = useState([]);
   const [prep, setPrep] = useState([]);
   const [aiStatus, setAiStatus] = useState("idle"); // idle | loading | ready | error
+
 
   useEffect(() => {
     const raw = sessionStorage.getItem("quizAnswers");
@@ -29,11 +34,14 @@ export default function Results() {
     setPicks(topPicks(scored, { maxTotal: 8, maxPerCategory: 2 }));
   }, []);
 
+
   useEffect(() => {
     if (!picks || picks.length === 0 || !answers) return;
 
+
     let cancelled = false;
     setAiStatus("loading");
+
 
     fetch("/api/recommend", {
       method: "POST",
@@ -59,14 +67,17 @@ export default function Results() {
         if (!cancelled) setAiStatus("error");
       });
 
+
     return () => {
       cancelled = true;
     };
   }, [picks, answers]);
 
+
   function printPlan() {
     if (typeof window !== "undefined") window.print();
   }
+
 
   if (picks === null) {
     return (
@@ -75,6 +86,7 @@ export default function Results() {
       </main>
     );
   }
+
 
   if (picks.length === 0) {
     return (
@@ -98,6 +110,7 @@ export default function Results() {
     );
   }
 
+
   const groups = {};
   for (const p of picks) {
     const cat = p.tool.category;
@@ -105,8 +118,10 @@ export default function Results() {
     groups[cat].push(p);
   }
 
+
   const industryLabel = answers?.industry?.label;
   const cost = costSummary(picks);
+
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -130,6 +145,7 @@ export default function Results() {
         </div>
       </nav>
 
+
       <main className="px-6 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-3 flex-wrap">
@@ -151,6 +167,7 @@ export default function Results() {
             more, no sign-up needed.
           </p>
 
+
           <div className="flex flex-wrap items-center gap-3 mb-10 print:hidden">
             <button
               type="button"
@@ -163,6 +180,7 @@ export default function Results() {
               No email or sign-up — your shortlist is saved in this browser.
             </span>
           </div>
+
 
           {/* AI walk-through + chat */}
           {aiStatus !== "idle" && (
@@ -206,6 +224,7 @@ export default function Results() {
                 )}
               </div>
 
+
               {aiStatus === "ready" && (
                 <div className="mb-6 print:hidden">
                   <AdvisorChat picks={picks.map((p) => p.tool)} />
@@ -213,6 +232,7 @@ export default function Results() {
               )}
             </>
           )}
+
 
           {/* Cost banner */}
           <div className="mb-6">
@@ -233,6 +253,7 @@ export default function Results() {
               </div>
             </div>
           </div>
+
 
           {/* Prep card */}
           {aiStatus === "ready" && prep.length > 0 && (
@@ -263,6 +284,7 @@ export default function Results() {
             </div>
           )}
 
+
           {/* 90-day timeline */}
           {aiStatus === "ready" && timeline.length > 0 && (
             <div className="mb-14">
@@ -274,6 +296,7 @@ export default function Results() {
                   A simple, sequenced rollout — so you don&apos;t try to do it all
                   in one weekend.
                 </p>
+
 
                 <div className="space-y-6">
                   {timeline.map((step, idx) => {
@@ -320,10 +343,12 @@ export default function Results() {
             </div>
           )}
 
+
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
             Your shortlist in detail
           </h2>
           <p className="text-slate-600 mb-6">Grouped by what they fix.</p>
+
 
           {Object.entries(groups).map(([category, items]) => (
             <div key={category} className="mb-8">
@@ -340,6 +365,7 @@ export default function Results() {
         </div>
       </main>
 
+
       <footer className="border-t border-slate-100 px-6 py-8 mt-12 bg-white print:hidden">
         <div className="max-w-5xl mx-auto text-center text-sm text-slate-500">
           <p>© 2026 RightTech · A portfolio project by Sam Mortimer</p>
@@ -348,6 +374,7 @@ export default function Results() {
     </div>
   );
 }
+
 
 function ToolCard({ tool, reasons }) {
   const priceClass =
@@ -359,12 +386,14 @@ function ToolCard({ tool, reasons }) {
       ? "bg-amber-100 text-amber-800"
       : "bg-purple-100 text-purple-800";
 
+
   const monogram = tool.name
     .split(/\s+/)
     .map((w) => w[0])
     .join("")
     .slice(0, 2)
     .toUpperCase();
+
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow">
@@ -384,6 +413,7 @@ function ToolCard({ tool, reasons }) {
       </div>
       <p className="text-sm text-slate-600 mb-3">{tool.description}</p>
 
+
       {tool.ukSpecific && (
         <div className="flex flex-wrap gap-1 mb-3">
           <span className="bg-red-50 text-red-700 border border-red-200 text-[10px] font-semibold px-2 py-0.5 rounded">
@@ -392,13 +422,18 @@ function ToolCard({ tool, reasons }) {
         </div>
       )}
 
+
       {reasons && reasons.length > 0 && (
         <p className="text-xs text-slate-500 italic mb-3">
           Why this fits: {reasons.join(" · ")}
         </p>
       )}
 
-      <div className="pt-3 border-t border-slate-100">
+
+      <TrustpilotBadge tool={tool} />
+
+
+      <div className="pt-3 border-t border-slate-100 mt-3">
         <a
           href={tool.url}
           target="_blank"
