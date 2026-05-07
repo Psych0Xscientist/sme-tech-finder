@@ -1,7 +1,25 @@
+import { checkRateLimit } from "../../lib/rate-limit";
+import { validateAnswers } from "../../lib/answer-schema";
+
 export const runtime = "nodejs";
 
 export async function POST(request) {
-  try {
+    const limit = checkRateLimit(request);
+    if (!limit.ok) {
+    return new Response(
+      JSON.stringify({
+        error: "Too many requests. Try again in a few minutes.",
+      }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(limit.retryAfter),
+        },
+      }
+    );
+    }
+    try {
     const { answers, picks } = await request.json();
 
     const endpoint = process.env.AZURE_AI_ENDPOINT;
