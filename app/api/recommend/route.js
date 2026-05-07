@@ -1,11 +1,11 @@
 import { checkRateLimit } from "../../lib/rate-limit";
-import { validateAnswers } from "../../lib/answer-schema";
+import { validateAnswers, validatePicks } from "../../lib/answer-schema";
 
 export const runtime = "nodejs";
 
 export async function POST(request) {
-    const limit = checkRateLimit(request);
-    if (!limit.ok) {
+  const limit = checkRateLimit(request);
+  if (!limit.ok) {
     return new Response(
       JSON.stringify({
         error: "Too many requests. Try again in a few minutes.",
@@ -18,9 +18,33 @@ export async function POST(request) {
         },
       }
     );
-    }
+  }
+
+  try {
+    let body;
     try {
-    const { answers, picks } = await request.json();
+      body = await request.json();
+    } catch {
+      return Response.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    // Honeypot — real users can't see this field, bots fill it in.
+    // Pretend success so bots don't learn the field exists.
+    if (body.website && String(body.website).trim() !== "") {
+      return Response.json({ prose: "", timeline: [], prep: [] });
+    }
+
+    const answersResult = validateAnswers(body.answers);
+    if (!answersResult.ok) {
+      return Response.json({ error: answersResult.error }, { status: 400 });
+    }
+    const picksResult = validatePicks(body.picks);
+    if (!picksResult.ok) {
+      return Response.json({ error: picksResult.error }, { status: 400 });
+    }
+
+    const answers = answersResult.answers;
+    const picks = picksResult.picks;
 
     const endpoint = process.env.AZURE_AI_ENDPOINT;
     const key = process.env.AZURE_AI_KEY;
@@ -34,9 +58,9 @@ export async function POST(request) {
     }
 
     // Helpers — answers store full option objects {label, value, tags}.
-    const single = (key) => answers?.[key]?.label || "unknown";
-    const multi = (key) => {
-      const arr = answers?.[key];
+    const single = (k) => answers?.[k]?.label || "unknown";
+    const multi = (k) => {
+      const arr = answers?.[k];
       if (!Array.isArray(arr) || arr.length === 0) return "none stated";
       return arr.map((o) => o.label).join(", ");
     };
@@ -54,14 +78,14 @@ Decision style: ${single("decision-style")}
 Biggest win wanted: ${single("biggest-win")}
 `.trim();
 
-    const toolList = (picks || [])
+    const toolList = picks
       .map(
         (p) =>
           `- ${p.name} (${p.category}, ${p.priceTier}): ${p.description}`
       )
       .join("\n");
 
-    const toolNames = (picks || []).map((p) => p.name);
+    const toolNames = picks.map((p) => p.name);
 
     const messages = [
       {

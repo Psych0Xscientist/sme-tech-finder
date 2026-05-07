@@ -55,9 +55,10 @@ export default function Results() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        website: "",
         answers,
         picks: picks.map((p) => p.tool),
-      }),
+        }),
     })
       .then((r) => r.json())
       .then((data) => {
