@@ -8,13 +8,6 @@
 //   2. `picks`   — scoring-engine tool list. Each pick is an object
 //      { name, category, priceTier, description, ... }. Same rule: we only
 //      keep the four fields that reach the LLM.
-//
-// Strict rules still apply to the fields that DO reach the model:
-//   - Whitelist top-level answer keys.
-//   - Hard length caps on every string.
-//   - Regex on `value` / tag fields.
-//   - Reject angle brackets / braces in free-text labels (blocks the most
-//     common prompt-injection patterns).
 
 const ANSWER_KEYS = new Set([
   "size",
@@ -70,11 +63,18 @@ function validString(x, max, regex) {
 
 function validateOption(opt) {
   if (!isPlainObject(opt)) return null;
-  if (!validString(opt.value, MAX_VALUE_LEN, VALUE_RE)) return null;
+
+  // Value can be a string OR a finite number (e.g. tech-comfort: 1).
+  // Coerce numbers to strings — that's what reaches the LLM anyway.
+  let value = opt.value;
+  if (typeof value === "number" && Number.isFinite(value)) {
+    value = String(value);
+  }
+  if (!validString(value, MAX_VALUE_LEN, VALUE_RE)) return null;
+
   if (!validString(opt.label, MAX_LABEL_LEN, LABEL_RE)) return null;
 
-  // Tags are optional. Drop invalid ones silently rather than rejecting
-  // the whole option — the option may carry UI tags we don't care about.
+  // Tags optional — drop invalid ones silently.
   let tags = [];
   if (Array.isArray(opt.tags)) {
     for (const t of opt.tags.slice(0, MAX_TAGS)) {
@@ -82,9 +82,7 @@ function validateOption(opt) {
     }
   }
 
-  // Reconstruct a clean object — any extra UI metadata (description,
-  // icon, etc.) is dropped here, so it never reaches the LLM.
-  return { label: opt.label, value: opt.value, tags };
+  return { label: opt.label, value, tags };
 }
 
 export function validateAnswers(answers) {
