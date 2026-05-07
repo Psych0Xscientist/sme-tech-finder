@@ -2,9 +2,19 @@
 //
 // Two things come from the client and end up inside the LLM prompt:
 //   1. `answers` — quiz responses. Each entry is an option object
-//      { label, value, tags } (or an array of them for multi-select).
+//      { label, value, tags, ... } (or an array of them for multi-select).
+//      Options may carry extra UI metadata (description, icon, etc.) — we
+//      silently drop unknown fields when reconstructing the clean object.
 //   2. `picks`   — scoring-engine tool list. Each pick is an object
-//      { name, category, priceTier, description }.
+//      { name, category, priceTier, description, ... }. Same rule: we only
+//      keep the four fields that reach the LLM.
+//
+// Strict rules still apply to the fields that DO reach the model:
+//   - Whitelist top-level answer keys.
+//   - Hard length caps on every string.
+//   - Regex on `value` / tag fields.
+//   - Reject angle brackets / braces in free-text labels (blocks the most
+//     common prompt-injection patterns).
 
 const ANSWER_KEYS = new Set([
   "size",
@@ -38,8 +48,6 @@ const MAX_LABEL_LEN = 200;
 const MAX_TAG_LEN = 40;
 const MAX_TAGS = 8;
 
-const OPTION_FIELDS = new Set(["label", "value", "tags"]);
-
 const VALUE_RE = /^[a-zA-Z0-9_-]+$/;
 const LABEL_RE = /^[^<>{}\\]*$/;
 
@@ -65,19 +73,17 @@ function validateOption(opt) {
   if (!validString(opt.value, MAX_VALUE_LEN, VALUE_RE)) return null;
   if (!validString(opt.label, MAX_LABEL_LEN, LABEL_RE)) return null;
 
+  // Tags are optional. Drop invalid ones silently rather than rejecting
+  // the whole option — the option may carry UI tags we don't care about.
   let tags = [];
-  if (opt.tags !== undefined) {
-    if (!Array.isArray(opt.tags) || opt.tags.length > MAX_TAGS) return null;
-    for (const t of opt.tags) {
-      if (!validString(t, MAX_TAG_LEN, VALUE_RE)) return null;
+  if (Array.isArray(opt.tags)) {
+    for (const t of opt.tags.slice(0, MAX_TAGS)) {
+      if (validString(t, MAX_TAG_LEN, VALUE_RE)) tags.push(t);
     }
-    tags = [...opt.tags];
   }
 
-  for (const key of Object.keys(opt)) {
-    if (!OPTION_FIELDS.has(key)) return null;
-  }
-
+  // Reconstruct a clean object — any extra UI metadata (description,
+  // icon, etc.) is dropped here, so it never reaches the LLM.
   return { label: opt.label, value: opt.value, tags };
 }
 
