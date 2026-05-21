@@ -10,16 +10,16 @@ const DEMOS = [
     label: "Retail",
     persona: "Small high-street boutique",
     walkthrough:
-      "Two things eat your week — chasing card payments at the till and tracking stock by hand. Start with FreeAgent for finances and SumUp for card payments. This week, open a FreeAgent trial and link your bank.",
+      "Two things eat your week — chasing card payments at the till and tracking stock by hand. Start with Tallyhive for finances and Tappay for card payments. This week, open a Tallyhive trial and link your bank.",
     tools: [
-      { mono: "FA", name: "FreeAgent", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
-      { mono: "SU", name: "SumUp", tag: "Card payments", price: "Free", monoBg: "bg-orange-100", monoText: "text-orange-700" },
-      { mono: "SQ", name: "Square for Retail", tag: "POS & stock", price: "Low", monoBg: "bg-slate-900", monoText: "text-white" },
+      { mono: "TH", name: "Tallyhive", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
+      { mono: "TP", name: "Tappay", tag: "Card payments", price: "Free", monoBg: "bg-orange-100", monoText: "text-orange-700" },
+      { mono: "TB", name: "TillBox Retail", tag: "POS & stock", price: "Low", monoBg: "bg-slate-900", monoText: "text-white" },
     ],
     timeline: [
-      { tag: "W1", title: "Get the money flowing", tool: "FreeAgent" },
-      { tag: "M1", title: "Take cards smoothly", tool: "SumUp" },
-      { tag: "Q1", title: "Stock visibility, finally", tool: "Square for Retail" },
+      { tag: "W1", title: "Get the money flowing", tool: "Tallyhive" },
+      { tag: "M1", title: "Take cards smoothly", tool: "Tappay" },
+      { tag: "Q1", title: "Stock visibility, finally", tool: "TillBox Retail" },
     ],
     cost: "£0 first month, then ~£25/mo",
     accent: "from-blue-500 to-purple-500",
@@ -30,16 +30,16 @@ const DEMOS = [
     label: "Hospitality",
     persona: "Solo café owner",
     walkthrough:
-      "You're customer-facing all day — every minute on admin is a minute off the floor. Start with FreeAgent for VAT and Canva for marketing. This week, get FreeAgent linked to your bank.",
+      "You're customer-facing all day — every minute on admin is a minute off the floor. Start with Tallyhive for VAT and DesignDeck for marketing. This week, get Tallyhive linked to your bank.",
     tools: [
-      { mono: "FA", name: "FreeAgent", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
-      { mono: "C", name: "Canva", tag: "Marketing", price: "Free", monoBg: "bg-purple-100", monoText: "text-purple-700" },
-      { mono: "W", name: "Wix", tag: "Website", price: "Free", monoBg: "bg-slate-900", monoText: "text-white" },
+      { mono: "TH", name: "Tallyhive", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
+      { mono: "DD", name: "DesignDeck", tag: "Marketing", price: "Free", monoBg: "bg-purple-100", monoText: "text-purple-700" },
+      { mono: "SW", name: "Sitewright", tag: "Website", price: "Free", monoBg: "bg-slate-900", monoText: "text-white" },
     ],
     timeline: [
-      { tag: "W1", title: "Sort VAT and books", tool: "FreeAgent" },
-      { tag: "M1", title: "Promote your café", tool: "Canva" },
-      { tag: "Q1", title: "Build a basic website", tool: "Wix" },
+      { tag: "W1", title: "Sort VAT and books", tool: "Tallyhive" },
+      { tag: "M1", title: "Promote your café", tool: "DesignDeck" },
+      { tag: "Q1", title: "Build a basic website", tool: "Sitewright" },
     ],
     cost: "£0 first month, then ~£0–20/mo",
     accent: "from-orange-500 to-rose-500",
@@ -50,16 +50,16 @@ const DEMOS = [
     label: "Trades",
     persona: "2-person plumbing firm",
     walkthrough:
-      "Quoting and invoicing from the van eats your evenings. Start with ServiceM8 for jobs and Chaser for late payments. This week, load ServiceM8 with your last 5 quotes.",
+      "Quoting and invoicing from the van eats your evenings. Start with JobBoxx for jobs and Nudgepay for late payments. This week, load JobBoxx with your last 5 quotes.",
     tools: [
-      { mono: "S8", name: "ServiceM8", tag: "Job management", price: "Low", monoBg: "bg-blue-100", monoText: "text-blue-700" },
-      { mono: "FA", name: "FreeAgent", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
-      { mono: "Ch", name: "Chaser", tag: "Invoice chasing", price: "Low", monoBg: "bg-amber-100", monoText: "text-amber-700" },
+      { mono: "JB", name: "JobBoxx", tag: "Job management", price: "Low", monoBg: "bg-blue-100", monoText: "text-blue-700" },
+      { mono: "TH", name: "Tallyhive", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
+      { mono: "NP", name: "Nudgepay", tag: "Invoice chasing", price: "Low", monoBg: "bg-amber-100", monoText: "text-amber-700" },
     ],
     timeline: [
-      { tag: "W1", title: "Quote from the van", tool: "ServiceM8" },
-      { tag: "M1", title: "Tighten the books", tool: "FreeAgent" },
-      { tag: "Q1", title: "Stop chasing late payments", tool: "Chaser" },
+      { tag: "W1", title: "Quote from the van", tool: "JobBoxx" },
+      { tag: "M1", title: "Tighten the books", tool: "Tallyhive" },
+      { tag: "Q1", title: "Stop chasing late payments", tool: "Nudgepay" },
     ],
     cost: "£0 first month, then ~£35/mo",
     accent: "from-emerald-500 to-blue-500",
@@ -70,16 +70,16 @@ const DEMOS = [
     label: "Professional services",
     persona: "Solo consultant",
     walkthrough:
-      "You bill by the hour but spend half your time on admin. Start with FreeAgent for invoicing and Canva for the brand. This week, send your first FreeAgent invoice.",
+      "You bill by the hour but spend half your time on admin. Start with Tallyhive for invoicing and DesignDeck for the brand. This week, send your first Tallyhive invoice.",
     tools: [
-      { mono: "FA", name: "FreeAgent", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
-      { mono: "Cv", name: "Canva", tag: "Branding", price: "Free", monoBg: "bg-purple-100", monoText: "text-purple-700" },
-      { mono: "Sq", name: "Squarespace", tag: "Website", price: "Low", monoBg: "bg-slate-900", monoText: "text-white" },
+      { mono: "TH", name: "Tallyhive", tag: "Accounting", price: "Free", monoBg: "bg-green-100", monoText: "text-green-700" },
+      { mono: "DD", name: "DesignDeck", tag: "Branding", price: "Free", monoBg: "bg-purple-100", monoText: "text-purple-700" },
+      { mono: "SF", name: "Studioframe", tag: "Website", price: "Low", monoBg: "bg-slate-900", monoText: "text-white" },
     ],
     timeline: [
-      { tag: "W1", title: "Send pro invoices", tool: "FreeAgent" },
-      { tag: "M1", title: "Sharpen your brand", tool: "Canva" },
-      { tag: "Q1", title: "Look the part online", tool: "Squarespace" },
+      { tag: "W1", title: "Send pro invoices", tool: "Tallyhive" },
+      { tag: "M1", title: "Sharpen your brand", tool: "DesignDeck" },
+      { tag: "Q1", title: "Look the part online", tool: "Studioframe" },
     ],
     cost: "£0 first month, then ~£15/mo",
     accent: "from-indigo-500 to-blue-500",
@@ -88,18 +88,18 @@ const DEMOS = [
     key: "online",
     emoji: "💻",
     label: "Online & e-commerce",
-    persona: "Etsy seller going independent",
+    persona: "Online seller going independent",
     walkthrough:
-      "You need a proper shopfront and a way to keep buyers coming back. Start with Wix for the site and Mailchimp for repeat customers. This week, claim your domain on Wix.",
+      "You need a proper shopfront and a way to keep buyers coming back. Start with Sitewright for the site and InboxBird for repeat customers. This week, claim your domain on Sitewright.",
     tools: [
-      { mono: "W", name: "Wix", tag: "Website + shop", price: "Free", monoBg: "bg-slate-900", monoText: "text-white" },
-      { mono: "MC", name: "Mailchimp", tag: "Email marketing", price: "Free", monoBg: "bg-yellow-100", monoText: "text-yellow-700" },
-      { mono: "ZB", name: "Zettle by PayPal", tag: "Payments", price: "Free", monoBg: "bg-blue-100", monoText: "text-blue-700" },
+      { mono: "SW", name: "Sitewright", tag: "Website + shop", price: "Free", monoBg: "bg-slate-900", monoText: "text-white" },
+      { mono: "IB", name: "InboxBird", tag: "Email marketing", price: "Free", monoBg: "bg-yellow-100", monoText: "text-yellow-700" },
+      { mono: "CC", name: "CardCub", tag: "Payments", price: "Free", monoBg: "bg-blue-100", monoText: "text-blue-700" },
     ],
     timeline: [
-      { tag: "W1", title: "Get your shop online", tool: "Wix" },
-      { tag: "M1", title: "Bring buyers back", tool: "Mailchimp" },
-      { tag: "Q1", title: "Take payments globally", tool: "Zettle by PayPal" },
+      { tag: "W1", title: "Get your shop online", tool: "Sitewright" },
+      { tag: "M1", title: "Bring buyers back", tool: "InboxBird" },
+      { tag: "Q1", title: "Take payments globally", tool: "CardCub" },
     ],
     cost: "£0 first month, then ~£15/mo",
     accent: "from-pink-500 to-purple-500",
@@ -152,7 +152,7 @@ export default function HomepageDemo() {
           </h2>
           <p className="text-slate-600 max-w-2xl mx-auto">
             Click an industry below to preview a sample shortlist and 90-day plan.
-            The real one is built around <em>your</em>  answers, not someone
+            The real one is built around <em>your</em> answers, not someone
             else&apos;s.
           </p>
         </div>
