@@ -91,7 +91,7 @@ export default function HowItWorksPage() {
                 <li>· Industry it suits (Retail, Trades, Hospitality, etc.)</li>
                 <li>· Business size (1, 2-10, 10+)</li>
                 <li>· Real price tier and total monthly cost</li>
-                <li>· Trustpilot rating, refreshed quarterly</li>
+                <li>· Tech-comfort level — beginner-friendly first</li>
               </ul>
               <p className="text-sm text-slate-500 mt-4 italic">
                 No US-only tools. No affiliate kickbacks.
@@ -189,22 +189,23 @@ export default function HowItWorksPage() {
           <div className="space-y-4">
             <div className="bg-white border border-slate-200 rounded-xl p-5">
               <p className="font-semibold text-slate-900 mb-1">
-                1. Vendor-published case studies
+                1. Category benchmarks
               </p>
               <p className="text-sm text-slate-600">
-                Most major tools (FreeAgent, Xero, Square, Mailchimp etc.) publish
-                customer case studies with quantified outcomes. We take the median
-                across UK-based small-business cases.
+                For each tool category (accounting, bookings, POS, marketing
+                etc.) we use typical time-savings reported across UK
+                small-business case studies and take the median.
               </p>
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-5">
               <p className="font-semibold text-slate-900 mb-1">
-                2. Customer surveys
+                2. Aggregated user-survey data
               </p>
               <p className="text-sm text-slate-600">
-                Where vendors publish aggregated user-survey data (e.g. &ldquo;users
-                save an average of X hours/week&rdquo;), we cite that number directly
-                and link to the source.
+                Where category-wide research publishes aggregated user-survey
+                data (e.g. &ldquo;users save an average of X hours/week&rdquo;),
+                we cite that range directly rather than pointing at a single
+                vendor.
               </p>
             </div>
             <div className="bg-white border border-slate-200 rounded-xl p-5">
@@ -234,27 +235,32 @@ export default function HowItWorksPage() {
       <section className="px-6 py-20">
         <div className="max-w-4xl mx-auto">
           <p className="text-sm font-semibold tracking-widest text-blue-600 uppercase mb-3">
-            Ratings policy
+            A note on tool names
           </p>
           <h2 className="text-3xl font-bold text-slate-900 mb-6">
-            Why we show low ratings too.
+            Why the tools have unfamiliar names.
           </h2>
           <div className="text-slate-700 leading-relaxed space-y-4">
             <p>
-              Some recommended tools score very high on Trustpilot. Others — including
-              industry-standard tools like Mailchimp — score surprisingly low, often
-              because Trustpilot disproportionately attracts complaints rather than
-              satisfied users.
+              RightTech is a working portfolio project, not a live commercial
+              recommender. To keep it honest — and to avoid implying endorsement
+              of, or comparison with, any real vendor — the catalogue uses
+              fictional tool names that stand in for real categories of UK SME
+              software.
             </p>
             <p>
-              <strong>We show every score honestly, even when it&apos;s bad.</strong>{" "}
-              If a tool is a strong fit for your needs but has a polarised review
-              profile, we flag that — and you decide.
+              <strong>
+                Each fictional tool maps cleanly to a real product category
+              </strong>{" "}
+              — accounting, payroll, bookings, POS, marketing and so on — and is
+              tagged for the same real-world variables (UK availability, price
+              tier, tech-comfort, business size, industry fit) that you&apos;d
+              use to choose between real options.
             </p>
             <p>
-              Ratings are refreshed quarterly. The current snapshot is from{" "}
-              <strong>May 2026</strong>, sourced from Trustpilot&apos;s public business
-              pages.
+              The matching engine, the 90-day plan, and the AI walk-through all
+              behave exactly as a real version would. Swap the catalogue for a
+              real one and the rest of the site keeps working unchanged.
             </p>
           </div>
         </div>
@@ -275,16 +281,16 @@ export default function HowItWorksPage() {
                 body: "Built by Sam Mortimer as a working demonstration of what a useful, honest SME-tech site could look like. It is not a registered business or a regulated adviser.",
               },
               {
+                title: "Tool names in the catalogue are fictional.",
+                body: "Each one stands in for a real category of UK SME software. The matching, the 90-day plan, and the AI walk-through all behave exactly as a real version would.",
+              },
+              {
                 title: "No affiliate links, no kickbacks.",
-                body: "Every recommendation is based on fit, not commission. If a free tool is the right answer, that's the answer.",
+                body: "Every recommendation is based on fit, not commission. If a free option is the right answer, that's the answer.",
               },
               {
                 title: "The AI is a guide, not a guarantee.",
                 body: "It surfaces sensible starting points based on your answers — but every business is different. Always do your own due diligence before committing to a tool.",
-              },
-              {
-                title: "The catalogue is curated, not exhaustive.",
-                body: "We only include tools we'd recommend to a friend. If you can't find what you need, the right answer might not be in here yet.",
               },
             ].map((d) => (
               <div
